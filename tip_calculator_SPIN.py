@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from PIL import Image, ImageTk
+import math
 
 # Function to calculate tip in standard increments of 15, 18, and 20, (and 100% just because)
 def calculate_tip(event=None):
@@ -19,22 +19,34 @@ def calculate_tip(event=None):
         tip_15.set("Invalid")
         tip_18.set("Invalid")
         tip_20.set("Invalid")
+        tip_100.set("Invalid")
         total_15.set("Invalid")
         total_18.set("Invalid")
         total_20.set("Invalid")
-        total_20.set("Invalid")
+        total_100.set("Invalid")
+
+
+# Function to spin the window in a circular motion
+def spin_window(angle=0):
+    # Calculate new x and y positions
+    radius = 100  # distance from the center
+    center_x = 500  # x-center of the circle
+    center_y = 300  # y-center of the circle
+
+    x = center_x + radius * math.cos(math.radians(angle))
+    y = center_y + radius * math.sin(math.radians(angle))
+
+    root.geometry(f"550x600+{int(x)}+{int(y)}")
+    root.after(20, lambda: spin_window((angle + 10) % 360))  # Increment angle for continuous spinning
+
 
 # Initialize window
 ctk.set_appearance_mode("dark")  # Light, Dark, or System
 ctk.set_default_color_theme("dark-blue")  # Change to "green", "dark-blue", etc.
 
 root = ctk.CTk()
-root.title("Tip Calculator")
+root.title("Spinning Tip Calculator")
 root.geometry("550x600")
-
-# # Set background
-# image = Image.open("your_image.jpg")
-# bg_image = ImageTk.PhotoImage(image)
 
 # Input Field
 ctk.CTkLabel(root, text="How was our Service?", font=("Arial", 20)).pack(pady=5)
@@ -77,5 +89,8 @@ ctk.CTkButton(root, text="Calculate", command=calculate_tip, font=("Arial", 14),
 
 # Set focus to the entry field
 entry.focus()
+
+# Start spinning the window
+spin_window()
 
 root.mainloop()
