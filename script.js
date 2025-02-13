@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql')
-app.use(cors)
+app.use(cors())
 app.get('/', (req, res) => res.send('Backend is running!'));
+app.use(express.json());
 
 const conDibbs = mysql.createPool({
     host:"localhost",
@@ -23,23 +24,14 @@ app.post('/totalbill', (req, res) => {
         return res.status(400).json({ status: "error", message: "Missing required fields" });
     }
 
-    let strCommand = `INSERT INTO tblTip (totalBill, tipPercent, tipAmount, totalAmount) VALUES (?, ?, ?, ?)`;
+    const strCommand = `INSERT INTO tblTip (totalBill, tipPercent, tipAmount, totalAmount) VALUES (?, ?, ?, ?)`;
 
-    conDibbs.getConnection((err, connection) => {
-        if (err) {
-            console.error("Database connection error:", err);
-            return res.status(500).json({ status: "error", message: "Database connection error" });
+    conDibbs.query(strCommand, [totalBill, tipPercent, tipAmount, totalAmount], (error, results) => {
+        if (error) {
+            console.error("Query execution error:", error);
+            return res.status(500).json({ status: "error", message: "Query execution error" });
         }
 
-        connection.query(strCommand, [totalBill, tipPercent, tipAmount, totalAmount], (error, results) => {
-            connection.release(); // Always release connection
-
-            if (error) {
-                console.error("Query execution error:", error);
-                return res.status(500).json({ status: "error", message: "Query execution error" });
-            }
-
-            res.status(201).json({ status: "success", message: "Bill inserted successfully", data: results });
-        });
+        res.status(201).json({ status: "success", message: "Bill inserted successfully", data: results });
     });
 });
