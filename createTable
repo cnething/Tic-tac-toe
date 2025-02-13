@@ -1,0 +1,7 @@
+CREATE TABLE tblTip (
+	billID INT AUTO_INCREMENT PRIMARY KEY,
+	totalBill INT,
+	tipPercent INT,
+	tipAmountAs INT,
+	totalAmountBill INT
+);
